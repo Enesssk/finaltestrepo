@@ -97,7 +97,13 @@ export default function Dashboard() {
                                     </span>
                                     {role === 'INSTRUCTOR' && (
                                         <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button className="p-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/40 transition-colors"><Edit size={16}/></button>
+                                            {/* DÜZENLEME BUTONU GÜNCELLENDİ */}
+                                            <button
+                                                onClick={() => navigate(`/edit-course/${course.id}`)}
+                                                className="p-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/40 transition-colors cursor-pointer"
+                                            >
+                                                <Edit size={16}/>
+                                            </button>
                                             <button className="p-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/40 transition-colors"><Trash2 size={16}/></button>
                                         </div>
                                     )}

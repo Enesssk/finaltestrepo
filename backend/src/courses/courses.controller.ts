@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Put, Body, UseGuards, Request, Param } from '@nestjs/common'; // Put ve Param eklendi
 import { PrismaService } from '../prisma.service';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -11,16 +11,19 @@ export class CoursesController {
         return this.prisma.course.findMany({ include: { categories: true } });
     }
 
+    // --- YENİ: ID'ye göre tek bir kursu getir (Düzenleme sayfası için lazım) ---
+    @Get(':id')
+    async getOne(@Param('id') id: string) {
+        return this.prisma.course.findUnique({
+            where: { id: Number(id) },
+            include: { categories: true }
+        });
+    }
+
     @UseGuards(AuthGuard('jwt'))
     @Post()
     async create(@Body() data: any, @Request() req) {
-        // BURAYA LOG KOYUYORUZ: Backend'e istek geliyor mu görelim
-        console.log("BACKEND'E İSTEK GELDİ!");
-        console.log("Kullanıcı ID (Token'dan):", req.user.userId);
-        console.log("Gelen Veri:", data);
-
         const userId = req.user.userId;
-
         return this.prisma.course.create({
             data: {
                 title: data.title,
@@ -30,6 +33,21 @@ export class CoursesController {
                     create: [{ name: data.category }]
                 }
             },
+        });
+    }
+
+    // --- YENİ: Kurs Güncelleme ---
+    @UseGuards(AuthGuard('jwt'))
+    @Put(':id')
+    async update(@Param('id') id: string, @Body() data: any) {
+        return this.prisma.course.update({
+            where: { id: Number(id) },
+            data: {
+                title: data.title,
+                description: data.description,
+                // Kategori güncellemek biraz daha karmaşıktır (ilişkili tablo),
+                // şimdilik sadece başlık ve açıklama güncelliyoruz.
+            }
         });
     }
 }
