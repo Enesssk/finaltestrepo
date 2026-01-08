@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Body, UseGuards, Request, Param } from '@nestjs/common'; // Put ve Param eklendi
+import { Controller, Get, Post, Put, Delete, Body, UseGuards, Request, Param } from '@nestjs/common'; // Put ve Param eklendi
 import { PrismaService } from '../prisma.service';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -48,6 +48,15 @@ export class CoursesController {
                 // Kategori güncellemek biraz daha karmaşıktır (ilişkili tablo),
                 // şimdilik sadece başlık ve açıklama güncelliyoruz.
             }
+        });
+    }
+
+    // --- YENİ EKLENEN KISIM: SİLME FONKSİYONU ---
+    @UseGuards(AuthGuard('jwt'))
+    @Delete(':id')
+    async delete(@Param('id') id: string) {
+        return this.prisma.course.delete({
+            where: { id: Number(id) },
         });
     }
 }

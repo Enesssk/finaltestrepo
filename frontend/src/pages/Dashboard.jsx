@@ -1,17 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios'; // <--- Axios eklendi
+import axios from 'axios';
 import { Plus, Trash2, Edit, LogOut, BookOpen } from 'lucide-react';
 
 export default function Dashboard() {
     const navigate = useNavigate();
-
-    // Başlangıçta boş dizi olsun, veriler backend'den gelecek
     const [courses, setCourses] = useState([]);
     const [role, setRole] = useState('STUDENT');
 
     useEffect(() => {
-        // 1. Rol Kontrolü
         const savedRole = localStorage.getItem('role');
         if (savedRole) {
             setRole(savedRole);
@@ -20,33 +17,22 @@ export default function Dashboard() {
             return;
         }
 
-        // 2. Kursları Backend'den Çekme Fonksiyonu
         const fetchCourses = async () => {
             try {
-                // Token gerekmiyor (Public endpoint yapmıştık), ama gerekirse header eklenir
                 const res = await axios.get('http://localhost:3000/courses');
-
-                // Gelen veriyi Frontend formatına uyduruyoruz
                 const formattedCourses = res.data.map(course => ({
                     id: course.id,
                     title: course.title,
-                    // Backend'de categories relation olduğu için array gelir, ilkini alalım:
-                    category: course.categories && course.categories.length > 0
-                        ? course.categories[0].name
-                        : 'Genel',
-                    // Backend'de henüz ders sayısı yok, şimdilik açıklamanın ilk 50 karakterini veya 0 gösterelim
+                    category: course.categories && course.categories.length > 0 ? course.categories[0].name : 'Genel',
                     description: course.description,
                     lessons: 0
                 }));
-
                 setCourses(formattedCourses);
             } catch (error) {
                 console.error("Kurslar yüklenirken hata oluştu:", error);
             }
         };
-
         fetchCourses();
-
     }, [navigate]);
 
     const handleLogout = () => {
@@ -55,8 +41,31 @@ export default function Dashboard() {
         navigate('/');
     };
 
+    // --- YENİ EKLENEN: SİLME FONKSİYONU ---
+    const handleDelete = async (courseId) => {
+        // Kullanıcıya soralım, yanlışlıkla silmesin
+        if (!window.confirm('Bu kursu kalıcı olarak silmek istediğinize emin misiniz?')) {
+            return;
+        }
+
+        const token = localStorage.getItem('token');
+        try {
+            await axios.delete(`http://localhost:3000/courses/${courseId}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            // Backend'den silindi, şimdi ekrandan (state'den) de silelim ki sayfa yenilemeye gerek kalmasın
+            setCourses(courses.filter(course => course.id !== courseId));
+
+            alert('Kurs başarıyla silindi.');
+        } catch (error) {
+            console.error("Silme hatası:", error);
+            alert('Kurs silinirken bir hata oluştu.');
+        }
+    };
+
     return (
-        <div className="w-full max-w-6xl mx-auto p-4"> {/* Ortalamak için mx-auto ve p-4 eklendi */}
+        <div className="w-full max-w-6xl mx-auto p-4">
             <header className="flex flex-col md:flex-row justify-between items-center mb-10 p-6 glass-card rounded-xl">
                 <h1 className="text-2xl md:text-4xl font-bold text-white mb-4 md:mb-0">
                     Hoşgeldin, <span className="text-purple-400">{role === 'INSTRUCTOR' ? 'Eğitmen' : 'Öğrenci'}</span>
@@ -72,16 +81,12 @@ export default function Dashboard() {
                         </button>
                     )}
 
-                    <button
-                        onClick={handleLogout}
-                        className="bg-red-500/20 hover:bg-red-500/40 text-red-200 border border-red-500/30 px-4 py-2 rounded-lg flex items-center gap-2 transition-all"
-                    >
+                    <button onClick={handleLogout} className="bg-red-500/20 hover:bg-red-500/40 text-red-200 border border-red-500/30 px-4 py-2 rounded-lg flex items-center gap-2 transition-all">
                         <LogOut size={20} /> <span className="hidden md:inline">Çıkış</span>
                     </button>
                 </div>
             </header>
 
-            {/* Kurs Listesi */}
             {courses.length === 0 ? (
                 <div className="text-center text-gray-400 mt-20">
                     <p className="text-xl">Henüz hiç kurs eklenmemiş.</p>
@@ -97,20 +102,27 @@ export default function Dashboard() {
                                     </span>
                                     {role === 'INSTRUCTOR' && (
                                         <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            {/* DÜZENLEME BUTONU GÜNCELLENDİ */}
+
+                                            {/* Düzenleme Butonu */}
                                             <button
                                                 onClick={() => navigate(`/edit-course/${course.id}`)}
                                                 className="p-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/40 transition-colors cursor-pointer"
                                             >
                                                 <Edit size={16}/>
                                             </button>
-                                            <button className="p-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/40 transition-colors"><Trash2 size={16}/></button>
+
+                                            {/* SİLME BUTONU GÜNCELLENDİ: onClick eklendi */}
+                                            <button
+                                                onClick={() => handleDelete(course.id)}
+                                                className="p-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/40 transition-colors cursor-pointer"
+                                            >
+                                                <Trash2 size={16}/>
+                                            </button>
+
                                         </div>
                                     )}
                                 </div>
                                 <h3 className="text-xl font-bold mb-2 text-white">{course.title}</h3>
-
-                                {/* Açıklama Alanı */}
                                 <p className="text-gray-400 text-sm mb-4 line-clamp-3">
                                     {course.description || "Açıklama bulunmuyor."}
                                 </p>
