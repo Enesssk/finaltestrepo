@@ -1,51 +1,70 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Yönlendirme için
-import { Plus, Trash2, Edit, LogOut } from 'lucide-react'; // Çıkış ikonu eklendi
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios'; // <--- Axios eklendi
+import { Plus, Trash2, Edit, LogOut, BookOpen } from 'lucide-react';
 
 export default function Dashboard() {
     const navigate = useNavigate();
 
-    // Demo veri
-    const [courses, setCourses] = useState([
-        { id: 1, title: 'React Masterclass', category: 'Yazılım', lessons: 12 },
-        { id: 2, title: 'NestJS Advanced', category: 'Backend', lessons: 8 },
-    ]);
-
+    // Başlangıçta boş dizi olsun, veriler backend'den gelecek
+    const [courses, setCourses] = useState([]);
     const [role, setRole] = useState('STUDENT');
 
     useEffect(() => {
-        // Rol kontrolü
+        // 1. Rol Kontrolü
         const savedRole = localStorage.getItem('role');
         if (savedRole) {
             setRole(savedRole);
         } else {
-            // Eğer giriş yapılmamışsa login'e at
             navigate('/');
+            return;
         }
-    }, []);
 
-    // ÇIKIŞ YAP FONKSİYONU
+        // 2. Kursları Backend'den Çekme Fonksiyonu
+        const fetchCourses = async () => {
+            try {
+                // Token gerekmiyor (Public endpoint yapmıştık), ama gerekirse header eklenir
+                const res = await axios.get('http://localhost:3000/courses');
+
+                // Gelen veriyi Frontend formatına uyduruyoruz
+                const formattedCourses = res.data.map(course => ({
+                    id: course.id,
+                    title: course.title,
+                    // Backend'de categories relation olduğu için array gelir, ilkini alalım:
+                    category: course.categories && course.categories.length > 0
+                        ? course.categories[0].name
+                        : 'Genel',
+                    // Backend'de henüz ders sayısı yok, şimdilik açıklamanın ilk 50 karakterini veya 0 gösterelim
+                    description: course.description,
+                    lessons: 0
+                }));
+
+                setCourses(formattedCourses);
+            } catch (error) {
+                console.error("Kurslar yüklenirken hata oluştu:", error);
+            }
+        };
+
+        fetchCourses();
+
+    }, [navigate]);
+
     const handleLogout = () => {
-        // 1. Hafızayı temizle
         localStorage.removeItem('token');
         localStorage.removeItem('role');
-
-        // 2. Login sayfasına fırlat
         navigate('/');
     };
 
     return (
-        <div className="w-full max-w-6xl">
-            <header className="flex justify-between items-center mb-10 p-4 glass-card rounded-xl">
-                <h1 className="text-2xl md:text-4xl font-bold text-white">
+        <div className="w-full max-w-6xl mx-auto p-4"> {/* Ortalamak için mx-auto ve p-4 eklendi */}
+            <header className="flex flex-col md:flex-row justify-between items-center mb-10 p-6 glass-card rounded-xl">
+                <h1 className="text-2xl md:text-4xl font-bold text-white mb-4 md:mb-0">
                     Hoşgeldin, <span className="text-purple-400">{role === 'INSTRUCTOR' ? 'Eğitmen' : 'Öğrenci'}</span>
                 </h1>
-                
+
                 <div className="flex gap-4">
-                    {/* Sadece Eğitmenler Görür */}
                     {role === 'INSTRUCTOR' && (
                         <button
-                            // AŞAĞIDAKİ SATIR EKLENDİ:
                             onClick={() => navigate('/create-course')}
                             className="btn-primary flex items-center gap-2 text-sm md:text-base"
                         >
@@ -53,7 +72,6 @@ export default function Dashboard() {
                         </button>
                     )}
 
-                    {/* ÇIKIŞ BUTONU */}
                     <button
                         onClick={handleLogout}
                         className="bg-red-500/20 hover:bg-red-500/40 text-red-200 border border-red-500/30 px-4 py-2 rounded-lg flex items-center gap-2 transition-all"
@@ -63,29 +81,47 @@ export default function Dashboard() {
                 </div>
             </header>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {courses.map((course) => (
-                    <div key={course.id} className="glass-card p-6 hover:scale-105 transition-transform duration-300 group">
-                        <div className="flex justify-between items-start mb-4">
-                <span className="bg-purple-500/20 text-purple-300 text-xs px-3 py-1 rounded-full uppercase tracking-wider">
-                    {course.category}
-                </span>
-                            {role === 'INSTRUCTOR' && (
-                                <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button className="p-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/40"><Edit size={16}/></button>
-                                    <button className="p-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/40"><Trash2 size={16}/></button>
+            {/* Kurs Listesi */}
+            {courses.length === 0 ? (
+                <div className="text-center text-gray-400 mt-20">
+                    <p className="text-xl">Henüz hiç kurs eklenmemiş.</p>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {courses.map((course) => (
+                        <div key={course.id} className="glass-card p-6 hover:scale-105 transition-transform duration-300 group flex flex-col justify-between h-full">
+                            <div>
+                                <div className="flex justify-between items-start mb-4">
+                                    <span className="bg-purple-500/20 text-purple-300 text-xs px-3 py-1 rounded-full uppercase tracking-wider font-semibold">
+                                        {course.category}
+                                    </span>
+                                    {role === 'INSTRUCTOR' && (
+                                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button className="p-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/40 transition-colors"><Edit size={16}/></button>
+                                            <button className="p-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/40 transition-colors"><Trash2 size={16}/></button>
+                                        </div>
+                                    )}
                                 </div>
-                            )}
-                        </div>
-                        <h3 className="text-xl font-bold mb-2">{course.title}</h3>
-                        <p className="text-gray-400 text-sm mb-4">{course.lessons} Ders İçeriği</p>
+                                <h3 className="text-xl font-bold mb-2 text-white">{course.title}</h3>
 
-                        <button className="w-full py-2 border border-slate-600 rounded-lg hover:bg-slate-700 transition-colors">
-                            {role === 'INSTRUCTOR' ? 'Yönet' : 'Derse Başla'}
-                        </button>
-                    </div>
-                ))}
-            </div>
+                                {/* Açıklama Alanı */}
+                                <p className="text-gray-400 text-sm mb-4 line-clamp-3">
+                                    {course.description || "Açıklama bulunmuyor."}
+                                </p>
+                            </div>
+
+                            <div className="mt-4 pt-4 border-t border-white/10 flex items-center justify-between text-gray-400 text-sm">
+                                <span className="flex items-center gap-1">
+                                    <BookOpen size={16}/> {course.lessons} Ders
+                                </span>
+                                <button className="text-purple-400 hover:text-purple-300 font-semibold transition-colors">
+                                    {role === 'INSTRUCTOR' ? 'Yönet' : 'İncele ->'}
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
