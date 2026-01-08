@@ -132,7 +132,11 @@ export default function Dashboard() {
                                 <span className="flex items-center gap-1">
                                     <BookOpen size={16}/> {course.lessons} Ders
                                 </span>
-                                <button className="text-purple-400 hover:text-purple-300 font-semibold transition-colors">
+                                {/* İNCELE BUTONU GÜNCELLENDİ */}
+                                <button
+                                    onClick={() => role === 'INSTRUCTOR' ? navigate(`/edit-course/${course.id}`) : navigate(`/course/${course.id}`)}
+                                    className="text-purple-400 hover:text-purple-300 font-semibold transition-colors cursor-pointer"
+                                >
                                     {role === 'INSTRUCTOR' ? 'Yönet' : 'İncele ->'}
                                 </button>
                             </div>
