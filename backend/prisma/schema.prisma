@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite" // Geliştirme için en kolayı, canlıda Postgres kullanabilirsin
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  role      String   // "INSTRUCTOR" veya "STUDENT"
+  courses   Course[] @relation("InstructorCourses") // Eğitmenin kursları
+  createdAt DateTime @default(now())
+}
+
+model Category {
+  id      Int      @id @default(autoincrement())
+  name    String
+  courses Course[] // N:N İlişkisi (Implicit)
+}
+
+model Course {
+  id           Int        @id @default(autoincrement())
+  title        String
+  description  String
+  instructorId Int
+  instructor   User       @relation("InstructorCourses", fields: [instructorId], references: [id])
+  lessons      Lesson[]   // 1:N İlişkisi
+  categories   Category[] // N:N İlişkisi
+}
+
+model Lesson {
+  id       Int    @id @default(autoincrement())
+  title    String
+  content  String
+  courseId Int
+  course   Course @relation(fields: [courseId], references: [id])
+}
