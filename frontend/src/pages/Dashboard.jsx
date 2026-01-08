@@ -67,9 +67,20 @@ export default function Dashboard() {
     return (
         <div className="w-full max-w-6xl mx-auto p-4">
             <header className="flex flex-col md:flex-row justify-between items-center mb-10 p-6 glass-card rounded-xl">
-                <h1 className="text-2xl md:text-4xl font-bold text-white mb-4 md:mb-0">
-                    Hoşgeldin, <span className="text-purple-400">{role === 'INSTRUCTOR' ? 'Eğitmen' : 'Öğrenci'}</span>
-                </h1>
+                {/* İSİM KISMINI TIKLANABİLİR YAPTIK */}
+                <div
+                    onClick={() => navigate('/profile')}
+                    className="cursor-pointer group mb-4 md:mb-0"
+                    title="Profili Görüntüle"
+                >
+                    <h1 className="text-2xl md:text-4xl font-bold text-white group-hover:text-purple-200 transition-colors">
+                        Hoşgeldin, <span className="text-purple-400 underline decoration-transparent group-hover:decoration-purple-400 transition-all">
+                {role === 'INSTRUCTOR' ? 'Eğitmen' : 'Öğrenci'}
+            </span>
+
+                    </h1>
+                    <p className="text-xs text-gray-400 mt-1 group-hover:text-white transition-colors">Profili Düzenle &gt;</p>
+                </div>
 
                 <div className="flex gap-4">
                     {role === 'INSTRUCTOR' && (

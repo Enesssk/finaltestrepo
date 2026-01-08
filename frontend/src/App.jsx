@@ -3,7 +3,8 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import CreateCourse from './pages/CreateCourse';
 import EditCourse from './pages/EditCourse';
-import CourseDetails from './pages/CourseDetails'; // <--- EKLENDİ
+import CourseDetails from './pages/CourseDetails';
+import Profile from './pages/Profile'; // <--- 1. IMPORT ET
 
 function App() {
     return (
@@ -14,9 +15,10 @@ function App() {
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/create-course" element={<CreateCourse />} />
                     <Route path="/edit-course/:id" element={<EditCourse />} />
-
-                    {/* YENİ ROTA: Öğrenci inceleme sayfası */}
                     <Route path="/course/:id" element={<CourseDetails />} />
+
+                    {/* 2. YENİ ROTA */}
+                    <Route path="/profile" element={<Profile />} />
                 </Routes>
             </div>
         </Router>

@@ -29,4 +29,17 @@ export class AuthService {
             role: user.role
         };
     }
+
+    // YENİ: ID'si verilen kullanıcının bilgilerini getir (Şifre hariç)
+    async getProfile(userId: number) {
+        const user = await this.prisma.user.findUnique({
+            where: { id: userId },
+        });
+
+        if (!user) return null;
+
+        // Şifreyi çıkartıp geri kalan bilgileri yollayalım (Güvenlik için)
+        const { password, ...result } = user;
+        return result;
+    }
 }
