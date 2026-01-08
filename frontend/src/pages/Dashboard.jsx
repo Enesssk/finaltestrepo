@@ -1,28 +1,68 @@
 import { useEffect, useState } from 'react';
-import { Plus, Trash2, Edit } from 'lucide-react'; // İkonlar için
+import { useNavigate } from 'react-router-dom'; // Yönlendirme için
+import { Plus, Trash2, Edit, LogOut } from 'lucide-react'; // Çıkış ikonu eklendi
 
 export default function Dashboard() {
-    // Demo veri (Backend'den çekilecek)
+    const navigate = useNavigate();
+
+    // Demo veri
     const [courses, setCourses] = useState([
         { id: 1, title: 'React Masterclass', category: 'Yazılım', lessons: 12 },
         { id: 2, title: 'NestJS Advanced', category: 'Backend', lessons: 8 },
     ]);
-    const role = "INSTRUCTOR"; // Normalde localStorage'dan gelecek: localStorage.getItem('role')
+
+    const [role, setRole] = useState('STUDENT');
+
+    useEffect(() => {
+        // Rol kontrolü
+        const savedRole = localStorage.getItem('role');
+        if (savedRole) {
+            setRole(savedRole);
+        } else {
+            // Eğer giriş yapılmamışsa login'e at
+            navigate('/');
+        }
+    }, []);
+
+    // ÇIKIŞ YAP FONKSİYONU
+    const handleLogout = () => {
+        // 1. Hafızayı temizle
+        localStorage.removeItem('token');
+        localStorage.removeItem('role');
+
+        // 2. Login sayfasına fırlat
+        navigate('/');
+    };
 
     return (
         <div className="w-full max-w-6xl">
-            <header className="flex justify-between items-center mb-10">
-                <h1 className="text-4xl font-bold text-white">
+            <header className="flex justify-between items-center mb-10 p-4 glass-card rounded-xl">
+                <h1 className="text-2xl md:text-4xl font-bold text-white">
                     Hoşgeldin, <span className="text-purple-400">{role === 'INSTRUCTOR' ? 'Eğitmen' : 'Öğrenci'}</span>
                 </h1>
-                {role === 'INSTRUCTOR' && (
-                    <button className="btn-primary flex items-center gap-2">
-                        <Plus size={20} /> Yeni Kurs Ekle
+                
+                <div className="flex gap-4">
+                    {/* Sadece Eğitmenler Görür */}
+                    {role === 'INSTRUCTOR' && (
+                        <button
+                            // AŞAĞIDAKİ SATIR EKLENDİ:
+                            onClick={() => navigate('/create-course')}
+                            className="btn-primary flex items-center gap-2 text-sm md:text-base"
+                        >
+                            <Plus size={20} /> <span className="hidden md:inline">Yeni Kurs</span>
+                        </button>
+                    )}
+
+                    {/* ÇIKIŞ BUTONU */}
+                    <button
+                        onClick={handleLogout}
+                        className="bg-red-500/20 hover:bg-red-500/40 text-red-200 border border-red-500/30 px-4 py-2 rounded-lg flex items-center gap-2 transition-all"
+                    >
+                        <LogOut size={20} /> <span className="hidden md:inline">Çıkış</span>
                     </button>
-                )}
+                </div>
             </header>
 
-            {/* Kurs Listesi - Grid Tasarım */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {courses.map((course) => (
                     <div key={course.id} className="glass-card p-6 hover:scale-105 transition-transform duration-300 group">
@@ -46,10 +86,6 @@ export default function Dashboard() {
                     </div>
                 ))}
             </div>
-
-            {/* Buraya N:N ve 1:N ilişkileri yönetmek için (Frontend'den ekleme/silme)
-         bir Modal veya Form eklenmelidir[cite: 10, 11].
-      */}
         </div>
     );
 }

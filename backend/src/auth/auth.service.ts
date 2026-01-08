@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { PrismaService } from '../prisma.service'; // Prisma servisini oluşturduğunu varsayıyorum
+import { PrismaService } from '../prisma.service';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -10,7 +10,12 @@ export class AuthService {
     async register(dto: any) {
         const hashedPassword = await bcrypt.hash(dto.password, 10);
         return this.prisma.user.create({
-            data: { ...dto, password: hashedPassword },
+            data: {
+                email: dto.email,
+                password: hashedPassword,
+                // Rol gelmezse 'STUDENT' yap, gelirse onu kullan
+                role: dto.role || 'STUDENT'
+            },
         });
     }
 

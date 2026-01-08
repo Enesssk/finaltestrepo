@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Put, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Request } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { AuthGuard } from '@nestjs/passport';
 
@@ -8,20 +8,26 @@ export class CoursesController {
 
     @Get()
     getAll() {
-        return this.prisma.course.findMany({ include: { categories: true, lessons: true } });
+        return this.prisma.course.findMany({ include: { categories: true } });
     }
 
     @UseGuards(AuthGuard('jwt'))
     @Post()
-    create(@Body() data: any) {
-        // Frontend'den gelen kategori ID'lerini bağlama (N:N yönetimi) [cite: 10]
+    async create(@Body() data: any, @Request() req) {
+        // BURAYA LOG KOYUYORUZ: Backend'e istek geliyor mu görelim
+        console.log("BACKEND'E İSTEK GELDİ!");
+        console.log("Kullanıcı ID (Token'dan):", req.user.userId);
+        console.log("Gelen Veri:", data);
+
+        const userId = req.user.userId;
+
         return this.prisma.course.create({
             data: {
                 title: data.title,
                 description: data.description,
-                instructorId: data.userId,
+                instructorId: userId,
                 categories: {
-                    connect: data.categoryIds.map((id: number) => ({ id }))
+                    create: [{ name: data.category }]
                 }
             },
         });
