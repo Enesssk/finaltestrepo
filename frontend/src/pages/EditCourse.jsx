@@ -42,7 +42,7 @@ export default function EditCourse() {
 
         try {
             // PUT isteği ile güncelle
-            await axios.put(`http://localhost:3000/courses/${id}`, {
+            await axios.put(`https://backend-enes.onrender.com/courses/${id}`, {
                 title: formData.title,
                 description: formData.description
             }, {

@@ -18,7 +18,7 @@ export default function Profile() {
 
             try {
                 // Backend'deki yeni yazdığımız endpoint'e istek atıyoruz
-                const res = await axios.get('http://localhost:3000/auth/profile', {
+                const res = await axios.get('https://backend-enes.onrender.com/auth/profile', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setUser(res.data);

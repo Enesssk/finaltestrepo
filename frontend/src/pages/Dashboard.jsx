@@ -19,7 +19,7 @@ export default function Dashboard() {
 
         const fetchCourses = async () => {
             try {
-                const res = await axios.get('http://localhost:3000/courses');
+                const res = await axios.get('https://backend-enes.onrender.com/courses');
                 const formattedCourses = res.data.map(course => ({
                     id: course.id,
                     title: course.title,

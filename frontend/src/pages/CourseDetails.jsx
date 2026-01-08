@@ -20,8 +20,8 @@ export default function CourseDetail() {
 
         const fetchCourseDetail = async () => {
             try {
-                console.log("İstek atılıyor: ", `http://localhost:3000/courses/${id}`);
-                const res = await axios.get(`http://localhost:3000/courses/${id}`);
+                console.log("İstek atılıyor: ", `https://backend-enes.onrender.com/courses/${id}`);
+                const res = await axios.get(`https://backend-enes.onrender.com/${id}`);
 
                 if (!res.data) {
                     setError("Kurs verisi boş döndü!");

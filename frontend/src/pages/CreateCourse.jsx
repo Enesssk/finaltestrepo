@@ -28,7 +28,7 @@ export default function CreateCourse() {
 
         try {
             // Backend'deki create metoduna istek atıyoruz
-            await axios.post('http://localhost:3000/courses', formData, {
+            await axios.post('https://backend-enes.onrender.com/courses', formData, {
                 headers: {
                     Authorization: `Bearer ${token}` // Backend @UseGuards(AuthGuard('jwt')) kullandığı için bu zorunlu
                 }

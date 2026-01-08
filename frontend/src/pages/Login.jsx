@@ -72,7 +72,7 @@ export default function Login() {
         }
 
         const endpoint = isRegister ? 'register' : 'login';
-        const apiBase = 'http://localhost:3000/auth';
+        const apiBase = 'https://backend-enes.onrender.com/auth';
 
         try {
             const payload = isRegister
