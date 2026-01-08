@@ -51,12 +51,5 @@ export class CoursesController {
         });
     }
 
-    // --- YENİ EKLENEN KISIM: SİLME FONKSİYONU ---
-    @UseGuards(AuthGuard('jwt'))
-    @Delete(':id')
-    async delete(@Param('id') id: string) {
-        return this.prisma.course.delete({
-            where: { id: Number(id) },
-        });
-    }
+
 }
