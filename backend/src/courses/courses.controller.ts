@@ -48,4 +48,13 @@ export class CoursesController {
     }
 
 
+
+    @UseGuards(AuthGuard('jwt'))
+    @Delete(':id')
+    async delete(@Param('id') id: string, @Request() req) {
+
+        return this.prisma.course.delete({
+            where: { id: Number(id) }
+        });
+    }
 }

@@ -27,7 +27,7 @@ model Course {
   title        String
   description  String
   instructorId Int
-  instructor   User       @relation("InstructorCourses", fields: [instructorId], references: [id])
+  instructor   User       @relation("InstructorCourses", fields: [instructorId], references: [id], onDelete: Cascade)
   lessons      Lesson[]
   categories   Category[]
 }
@@ -37,5 +37,5 @@ model Lesson {
   title    String
   content  String
   courseId Int
-  course   Course @relation(fields: [courseId], references: [id])
+  course   Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 }
