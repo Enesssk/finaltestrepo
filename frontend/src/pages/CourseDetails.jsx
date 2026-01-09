@@ -8,10 +8,9 @@ export default function CourseDetail() {
     const navigate = useNavigate();
     const [course, setCourse] = useState(null);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null); // Hata durumu eklendi
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        // ID kontrolü
         if (!id || id === 'undefined') {
             setError("Geçersiz Kurs ID'si!");
             setLoading(false);
@@ -38,7 +37,6 @@ export default function CourseDetail() {
         fetchCourseDetail();
     }, [id]);
 
-    // YÜKLENİYORSA
     if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center text-white">
@@ -47,7 +45,6 @@ export default function CourseDetail() {
         );
     }
 
-    // HATA VARSA
     if (error || !course) {
         return (
             <div className="min-h-screen flex flex-col items-center justify-center text-white p-4">
@@ -61,7 +58,6 @@ export default function CourseDetail() {
         );
     }
 
-    // VERİ GELDİYSE SAYFAYI GÖSTER
     const categoryName = course.categories && course.categories.length > 0
         ? course.categories[0].name
         : 'Genel';
@@ -77,7 +73,6 @@ export default function CourseDetail() {
                     <ArrowLeft size={20} className="mr-2" /> Kurslara Dön
                 </button>
 
-                {/* Banner */}
                 <div className="glass-card p-8 md:p-12 mb-8 relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-purple-600/20 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
 
@@ -109,7 +104,6 @@ export default function CourseDetail() {
                     </button>
                 </div>
 
-                {/* İçerik */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div className="md:col-span-2 glass-card p-8">
                         <h3 className="text-2xl font-bold text-white mb-4">Kurs Hakkında</h3>

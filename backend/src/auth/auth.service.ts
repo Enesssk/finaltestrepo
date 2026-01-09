@@ -13,7 +13,6 @@ export class AuthService {
             data: {
                 email: dto.email,
                 password: hashedPassword,
-                // Rol gelmezse 'STUDENT' yap, gelirse onu kullan
                 role: dto.role || 'STUDENT'
             },
         });
@@ -30,7 +29,6 @@ export class AuthService {
         };
     }
 
-    // YENİ: ID'si verilen kullanıcının bilgilerini getir (Şifre hariç)
     async getProfile(userId: number) {
         const user = await this.prisma.user.findUnique({
             where: { id: userId },
@@ -38,7 +36,6 @@ export class AuthService {
 
         if (!user) return null;
 
-        // Şifreyi çıkartıp geri kalan bilgileri yollayalım (Güvenlik için)
         const { password, ...result } = user;
         return result;
     }

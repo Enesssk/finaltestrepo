@@ -27,15 +27,14 @@ export default function CreateCourse() {
         }
 
         try {
-            // Backend'deki create metoduna istek atıyoruz
             await axios.post('https://backend-enes.onrender.com/courses', formData, {
                 headers: {
-                    Authorization: `Bearer ${token}` // Backend @UseGuards(AuthGuard('jwt')) kullandığı için bu zorunlu
+                    Authorization: `Bearer ${token}`
                 }
             });
 
             alert('Kurs başarıyla oluşturuldu!');
-            navigate('/dashboard'); // İşlem bitince dashboard'a dön
+            navigate('/dashboard');
         } catch (error) {
             console.error(error);
             alert('Kurs eklenirken bir hata oluştu.');
@@ -46,7 +45,6 @@ export default function CreateCourse() {
         <div className="flex justify-center items-center min-h-screen p-4">
             <div className="glass-card p-8 w-full max-w-2xl">
 
-                {/* Geri Dön Butonu */}
                 <button
                     onClick={() => navigate('/dashboard')}
                     className="flex items-center text-gray-400 hover:text-white mb-6 transition-colors"

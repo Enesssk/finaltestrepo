@@ -11,15 +11,15 @@ model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
   password  String
-  role      String   // "INSTRUCTOR" veya "STUDENT"
-  courses   Course[] @relation("InstructorCourses") // Eğitmenin kursları
+  role      String
+  courses   Course[] @relation("InstructorCourses")
   createdAt DateTime @default(now())
 }
 
 model Category {
   id      Int      @id @default(autoincrement())
   name    String
-  courses Course[] // N:N İlişkisi (Implicit)
+  courses Course[]
 }
 
 model Course {
@@ -28,8 +28,8 @@ model Course {
   description  String
   instructorId Int
   instructor   User       @relation("InstructorCourses", fields: [instructorId], references: [id])
-  lessons      Lesson[]   // 1:N İlişkisi
-  categories   Category[] // N:N İlişkisi
+  lessons      Lesson[]
+  categories   Category[]
 }
 
 model Lesson {

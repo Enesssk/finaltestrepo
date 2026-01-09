@@ -16,11 +16,9 @@ export class AuthController {
         return this.authService.register(body);
     }
 
-    // --- YENİ: Profil Endpoint'i ---
-    @UseGuards(AuthGuard('jwt')) // Sadece giriş yapmışlar görebilir
+    @UseGuards(AuthGuard('jwt'))
     @Get('profile')
     async getProfile(@Request() req) {
-        // Token'dan gelen userId ile veritabanından bilgileri çek
         return this.authService.getProfile(req.user.userId);
     }
 }

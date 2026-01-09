@@ -11,7 +11,6 @@ export class CoursesController {
         return this.prisma.course.findMany({ include: { categories: true } });
     }
 
-    // --- YENİ: ID'ye göre tek bir kursu getir (Düzenleme sayfası için lazım) ---
     @Get(':id')
     async getOne(@Param('id') id: string) {
         return this.prisma.course.findUnique({
@@ -36,7 +35,6 @@ export class CoursesController {
         });
     }
 
-    // --- YENİ: Kurs Güncelleme ---
     @UseGuards(AuthGuard('jwt'))
     @Put(':id')
     async update(@Param('id') id: string, @Body() data: any) {
@@ -45,8 +43,6 @@ export class CoursesController {
             data: {
                 title: data.title,
                 description: data.description,
-                // Kategori güncellemek biraz daha karmaşıktır (ilişkili tablo),
-                // şimdilik sadece başlık ve açıklama güncelliyoruz.
             }
         });
     }

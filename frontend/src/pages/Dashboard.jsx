@@ -41,9 +41,7 @@ export default function Dashboard() {
         navigate('/');
     };
 
-    // --- YENİ EKLENEN: SİLME FONKSİYONU ---
     const handleDelete = async (courseId) => {
-        // Kullanıcıya soralım, yanlışlıkla silmesin
         if (!window.confirm('Bu kursu kalıcı olarak silmek istediğinize emin misiniz?')) {
             return;
         }
@@ -54,7 +52,6 @@ export default function Dashboard() {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
-            // Backend'den silindi, şimdi ekrandan (state'den) de silelim ki sayfa yenilemeye gerek kalmasın
             setCourses(courses.filter(course => course.id !== courseId));
 
             alert('Kurs başarıyla silindi.');
@@ -67,7 +64,6 @@ export default function Dashboard() {
     return (
         <div className="w-full max-w-6xl mx-auto p-4">
             <header className="flex flex-col md:flex-row justify-between items-center mb-10 p-6 glass-card rounded-xl">
-                {/* İSİM KISMINI TIKLANABİLİR YAPTIK */}
                 <div
                     onClick={() => navigate('/profile')}
                     className="cursor-pointer group mb-4 md:mb-0"
@@ -122,7 +118,7 @@ export default function Dashboard() {
                                                 <Edit size={16}/>
                                             </button>
 
-                                            {/* SİLME BUTONU GÜNCELLENDİ: onClick eklendi */}
+                                            {/* SİLME BUTONU */}
                                             <button
                                                 onClick={() => handleDelete(course.id)}
                                                 className="p-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/40 transition-colors cursor-pointer"
@@ -143,7 +139,6 @@ export default function Dashboard() {
                                 <span className="flex items-center gap-1">
                                     <BookOpen size={16}/> {course.lessons} Ders
                                 </span>
-                                {/* İNCELE BUTONU GÜNCELLENDİ */}
                                 <button
                                     onClick={() => role === 'INSTRUCTOR' ? navigate(`/edit-course/${course.id}`) : navigate(`/course/${course.id}`)}
                                     className="text-purple-400 hover:text-purple-300 font-semibold transition-colors cursor-pointer"

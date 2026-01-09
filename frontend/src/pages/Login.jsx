@@ -4,46 +4,36 @@ import axios from 'axios';
 import { AlertCircle, CheckCircle } from 'lucide-react'; // İkonlar eklendi
 
 export default function Login() {
-    // Kullanıcının kayıt ekranında mı giriş ekranında mı olduğunu tutar
     const [isRegister, setIsRegister] = useState(false);
 
-    // Kullanıcının kendi gireceği bilgiler
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [role, setRole] = useState('STUDENT');
 
-    // Şifre hatasını tutacak state
     const [passwordError, setPasswordError] = useState('');
 
     const navigate = useNavigate();
 
-    // --- ŞİFRE KONTROL FONKSİYONU ---
     const validatePassword = (pass) => {
-        // 1. Uzunluk en az 8 mi?
         if (pass.length < 8) {
             return "Şifre en az 8 karakter olmalı.";
         }
-        // 2. Büyük harf var mı?
         if (!/[A-Z]/.test(pass)) {
             return "Şifre en az bir BÜYÜK harf içermeli.";
         }
-        // 3. Küçük harf var mı?
         if (!/[a-z]/.test(pass)) {
             return "Şifre en az bir küçük harf içermeli.";
         }
-        // 4. Sayı var mı?
         if (!/[0-9]/.test(pass)) {
             return "Şifre en az bir rakam (0-9) içermeli.";
         }
-        return ""; // Hata yok
+        return "";
     };
 
-    // Şifre inputu değiştikçe çalışır
     const handlePasswordChange = (e) => {
         const val = e.target.value;
         setPassword(val);
 
-        // Sadece kayıt modundaysak kontrol et
         if (isRegister) {
             setPasswordError(validatePassword(val));
         } else {
@@ -51,7 +41,6 @@ export default function Login() {
         }
     };
 
-    // Mod değişince (Giriş <-> Kayıt) formu ve hataları temizle
     const toggleMode = () => {
         setIsRegister(!isRegister);
         setPasswordError("");
@@ -62,12 +51,11 @@ export default function Login() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // Eğer Kayıt modundaysak ve şifrede hata varsa dur!
         if (isRegister) {
             const error = validatePassword(password);
             if (error) {
                 setPasswordError(error);
-                return; // Backend'e gitme
+                return;
             }
         }
 
@@ -83,7 +71,7 @@ export default function Login() {
 
             if (isRegister) {
                 alert("Kayıt işleminiz başarıyla tamamlandı! Şimdi giriş yapabilirsiniz.");
-                toggleMode(); // Giriş ekranına at
+                toggleMode();
             } else {
                 localStorage.setItem('token', res.data.access_token);
                 localStorage.setItem('role', res.data.role);
@@ -124,7 +112,6 @@ export default function Login() {
                         required
                     />
 
-                    {/* Hata Mesajı veya Onay Mesajı (Sadece Kayıt Modunda) */}
                     {isRegister && password && (
                         <div className={`text-xs mt-2 flex items-center gap-1 ${passwordError ? 'text-red-400' : 'text-green-400'}`}>
                             {passwordError ? (
@@ -140,7 +127,6 @@ export default function Login() {
                     )}
                 </div>
 
-                {/* Sadece Kayıt Modundaysak ROL sorsun */}
                 {isRegister && (
                     <div>
                         <label className="block text-sm text-gray-300 mb-1">Hesap Türü Seçin</label>
@@ -157,7 +143,6 @@ export default function Login() {
 
                 <button
                     type="submit"
-                    // Hata varsa butonu pasif yap
                     disabled={isRegister && passwordError !== ""}
                     className={`w-full mt-4 font-bold py-2 px-6 rounded-lg transition-all shadow-lg 
                         ${(isRegister && passwordError)

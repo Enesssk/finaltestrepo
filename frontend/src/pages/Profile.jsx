@@ -17,14 +17,12 @@ export default function Profile() {
             }
 
             try {
-                // Backend'deki yeni yazdığımız endpoint'e istek atıyoruz
                 const res = await axios.get('https://backend-enes.onrender.com/auth/profile', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setUser(res.data);
             } catch (error) {
                 console.error("Profil yüklenemedi", error);
-                // Token geçersizse çıkış yap
                 localStorage.clear();
                 navigate('/');
             } finally {
@@ -57,7 +55,6 @@ export default function Profile() {
             </div>
 
             <div className="glass-card w-full max-w-md p-8 relative overflow-hidden">
-                {/* Dekoratif Arka Plan */}
                 <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/20 rounded-full blur-3xl -mr-10 -mt-10"></div>
 
                 <div className="flex flex-col items-center mb-8">

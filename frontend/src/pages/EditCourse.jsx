@@ -1,19 +1,18 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom'; // useParams: URL'deki ID'yi alır
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { ArrowLeft, Save } from 'lucide-react';
 
 export default function EditCourse() {
     const navigate = useNavigate();
-    const { id } = useParams(); // URL'den id'yi yakala (örn: /edit-course/5)
+    const { id } = useParams();
 
     const [formData, setFormData] = useState({
         title: '',
         description: '',
-        category: '' // Kategori gösterimlik kalacak
+        category: ''
     });
 
-    // Sayfa açılınca mevcut verileri çek
     useEffect(() => {
         const fetchCourse = async () => {
             try {
@@ -41,7 +40,6 @@ export default function EditCourse() {
         const token = localStorage.getItem('token');
 
         try {
-            // PUT isteği ile güncelle
             await axios.put(`https://backend-enes.onrender.com/courses/${id}`, {
                 title: formData.title,
                 description: formData.description
@@ -96,7 +94,6 @@ export default function EditCourse() {
                         />
                     </div>
 
-                    {/* Kategori salt okunur (Disable) yaptık çünkü backend güncellemesinde hariç tuttuk */}
                     <div>
                         <label className="block text-sm text-gray-500 mb-2">Kategori (Değiştirilemez)</label>
                         <input
