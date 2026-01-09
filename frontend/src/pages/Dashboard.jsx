@@ -48,7 +48,7 @@ export default function Dashboard() {
 
         const token = localStorage.getItem('token');
         try {
-            await axios.delete(`http://localhost:3000/courses/${courseId}`, {
+            await axios.delete(`https://backend-enes.onrender.com/courses/${courseId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 
